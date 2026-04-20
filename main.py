@@ -5,25 +5,39 @@ import numpy as np
 
 load=OSAData(r"C:\Users\PC\OneDrive\Pulpit\telemedycyna\Apnea-detection\data")
 data=load.load_data()
-data=data[0]
-spo2=data["spo2"]
-spo2_time=spo2["time"]
-spo2_values=spo2["spo2"]
-annotation=data["annotation"]
-print(f"First 10 SpO2 values: {spo2_values[:10]}")
-print(f"First 10 SpO2 times: {spo2_time[:10]}")
-print(f"First 10 annotations: {annotation['events'][:10]}")
-print(f"Record start: {annotation['record_start']}")
 
 
 
-apnea_events=[]
-for event in annotation['events']:
-    if event['event_type']=='osa':
-        start_time=event['evnet_start']
-        duration=event['event_duration']
-        end_time=start_time+duration
-        print(f"Apnea event from {start_time} to {end_time}")
-        apnea_events.append([start_time, end_time])
+for key, value in data.items():
+    if key=='record_start':
+        print(f"{key}: {value}")
         break
+    print(f"{key}: {len(data[key])} samples")
 
+
+print(data['annotation'][:5])
+
+# OSA event -> Obstructive Sleep Apnea 
+# Hypo event -> Hypopnea
+# Both are classified as apneic events, but they have different characteristics.
+
+
+Hypo_time=[]
+OSA_time=[]
+
+for event in data['annotation'][:5]:
+    print(event)
+    print(f"event: {event['event_type']}\n start:{event['evnet_start']} \n end:{event['evnet_start']+int(event['event_duration'])}")
+    if event['event_type']=='osa':
+        OSA_time.append([event['evnet_start'], event['evnet_start']+int(event['event_duration'])])
+    else:
+        Hypo_time.append([event['evnet_start'], event['evnet_start']+int(event['event_duration'])])
+        
+    
+
+apnea_events={
+    'OSA events': OSA_time,
+    'hypo_events':Hypo_time
+    }
+
+print(apnea_events)

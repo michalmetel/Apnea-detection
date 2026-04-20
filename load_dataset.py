@@ -78,6 +78,14 @@ class OSAData:
                 patient_data = self.load_single_patient(files)
                 self.patient_data.append(patient_data)
 
-        return self.patient_data
+        self.patient_data=self.patient_data[0]
+        patient={
+            'spo2_time': self.patient_data["spo2"]["time"],
+            'spo2_values': self.patient_data["spo2"]["spo2"],
+            'annotation': self.patient_data["annotation"]['events'],
+            'record_start': self.patient_data["annotation"]["record_start"]
+        }
+
+        return patient 
     
 
