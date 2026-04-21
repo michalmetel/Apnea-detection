@@ -34,10 +34,17 @@ for event in data['annotation'][:5]:
         Hypo_time.append([event['evnet_start'], event['evnet_start']+int(event['event_duration'])])
         
     
-
+#For every event there are to values -> [[start,stop]] of event
 apnea_events={
     'OSA events': OSA_time,
     'hypo_events':Hypo_time
     }
 
 print(apnea_events)
+
+spo2_val=data['spo2_values']
+spo2_t=data['spo2_time']
+print(f"First 5 samples: {spo2_val[:5]}\n First 5 time records: {spo2_t[:5]}")
+print(min(spo2_t))
+
+#print(f"SpO2 values for OSA event: {spo2_val}")
