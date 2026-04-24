@@ -2,6 +2,7 @@ import os
 import json
 import pandas as pd
 from glob import glob
+import numpy as np
 
 
 class OSAData:
@@ -39,7 +40,6 @@ class OSAData:
         time_col = pd.read_csv(spo_path, usecols=[1]).iloc[:, 0]
         timestamps = time_col.apply(OSAData.str2seconds) - record_start
 
-       
         value_col = pd.read_csv(spo_path, usecols=[2]).iloc[:, 0]
         values = [0 if x == '-' else float(x) for x in value_col]
 
@@ -57,14 +57,12 @@ class OSAData:
 
         record_start = None
 
-     
         for file in files:
             if 'annotation' in file:
                 ann = OSAData.extract_event_annotations(file)
                 data["annotation"] = ann
                 record_start = ann["record_start"]
 
-  
         for file in files:
             if 'SpO2' in file:
                 data["spo2"] = OSAData.extract_spo2(file, record_start)
@@ -78,14 +76,12 @@ class OSAData:
                 patient_data = self.load_single_patient(files)
                 self.patient_data.append(patient_data)
 
-        self.patient_data=self.patient_data[0]
-        patient={
-            'spo2_time': self.patient_data["spo2"]["time"],
-            'spo2_values': self.patient_data["spo2"]["spo2"],
-            'annotation': self.patient_data["annotation"]['events'],
-            'record_start': self.patient_data["annotation"]["record_start"]
-        }
+        self.patient_data = self.patient_data[0]
+        patient = {
+        'spo2_time': np.array(self.patient_data["spo2"]["time"]) + self.patient_data["annotation"]["record_start"],  # powrót do czasu absolutnego
+        'spo2_values': np.array(self.patient_data["spo2"]["spo2"]),
+        'annotation': self.patient_data["annotation"]['events'],
+        'record_start': self.patient_data["annotation"]["record_start"]
+    }
 
-        return patient 
-    
-
+        return patient
