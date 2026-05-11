@@ -76,12 +76,14 @@ class OSAData:
                 patient_data = self.load_single_patient(files)
                 self.patient_data.append(patient_data)
 
-        self.patient_data = self.patient_data[0]
-        patient = {
-        'spo2_time': np.array(self.patient_data["spo2"]["time"]) + self.patient_data["annotation"]["record_start"],  # powrót do czasu absolutnego
-        'spo2_values': np.array(self.patient_data["spo2"]["spo2"]),
-        'annotation': self.patient_data["annotation"]['events'],
-        'record_start': self.patient_data["annotation"]["record_start"]
-    }
+        all_patients = []
+        for p in self.patient_data:
+            patient = {
+                'spo2_time':    np.array(p["spo2"]["time"]) + p["annotation"]["record_start"],
+                'spo2_values':  np.array(p["spo2"]["spo2"]),
+                'annotation':   p["annotation"]['events'],
+                'record_start': p["annotation"]["record_start"]
+            }
+            all_patients.append(patient)
 
-        return patient
+        return all_patients
